@@ -37,6 +37,7 @@ let { src, dest } = require("gulp"),
   group_media = require("gulp-group-css-media-queries"),
   clean_css = require("gulp-clean-css"),
   rename = require("gulp-rename");
+uglify = require("gulp-uglify-es").default;
 
 function browserSync() {
   browsersync.init({
@@ -84,7 +85,14 @@ function js() {
   return src(path.src.js)
     .pipe(fileinclude())
     .pipe(dest(path.build.js))
-    .pipe(browserSync.stream());
+    .pipe(uglify())
+    .pipe(
+      rename({
+        extname: ".min.js"
+      })
+    )
+    .pipe(dest(path.build.js))
+    .pipe(browsersync.stream());
 }
 
 function watchFiles() {
