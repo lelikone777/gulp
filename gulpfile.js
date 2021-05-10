@@ -39,7 +39,10 @@ let { src, dest } = require("gulp"),
   rename = require("gulp-rename"),
   uglify = require("gulp-uglify-es").default,
   imagemin = require("gulp-imagemin"),
-  webp = require("gulp-webp");
+  webp = require("gulp-webp"),
+  webphtml = require("gulp-webp-html"),
+  webpcss = require("gulp-webpcss"),
+  svgSprite = require("gulp-svg-sprite");
 
 function browserSync() {
   browsersync.init({
@@ -54,6 +57,7 @@ function browserSync() {
 function html() {
   return src(path.src.html)
     .pipe(fileinclude())
+    .pipe(webphtml())
     .pipe(dest(path.build.html))
     .pipe(browsersync.stream());
 }
@@ -72,6 +76,7 @@ function css() {
         cascade: true,
       })
     )
+    .pipe(webpcss())
     .pipe(dest(path.build.css))
     .pipe(clean_css())
     .pipe(
@@ -117,6 +122,22 @@ function images() {
     .pipe(dest(path.build.img))
     .pipe(browsersync.stream());
 }
+
+gulp.task("svgSprite", function () {
+  return gulp
+    .src([source_folder + "/iconsprite/*.svg"])
+    .pipe(
+      svgSprite({
+        mode: {
+          stack: {
+            sprite: "../icons/icons.svg", // sprite file name
+            example: true
+          },
+        },
+      })
+    )
+    .pipe(dest(path.build.img));
+});
 
 function watchFiles() {
   gulp.watch([path.watch.html], html);
