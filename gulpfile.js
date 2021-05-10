@@ -80,18 +80,27 @@ function css() {
     .pipe(browsersync.stream());
 }
 
+function js() {
+  return src(path.src.js)
+    .pipe(fileinclude())
+    .pipe(dest(path.build.js))
+    .pipe(browserSync.stream());
+}
+
 function watchFiles() {
   gulp.watch([path.watch.html], html);
   gulp.watch([path.watch.css], css);
+  gulp.watch([path.watch.js], js);
 }
 
 function clean() {
   return del(path.clean);
 }
 
-let build = gulp.series(clean, gulp.parallel(css, html));
+let build = gulp.series(clean, gulp.parallel(js, css, html));
 let watch = gulp.parallel(build, watchFiles, browserSync);
 
+exports.js = js;
 exports.css = css;
 exports.html = html;
 exports.build = build;
