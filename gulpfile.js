@@ -1,6 +1,6 @@
 const autoPrefixer = require("gulp-autoprefixer");
 
-let project_folder = "dist";
+let project_folder = require('path').basename(__dirname);
 let source_folder = "#src";
 let fs = require("fs");
 
@@ -159,7 +159,7 @@ gulp.task("svgSprite", function () {
     .pipe(dest(path.build.img));
 });
 
-function fontsStyle(params) {
+function fontsStyle(cb) {
   let file_content = fs.readFileSync(source_folder + "/sass/_fonts.sass");
   if (file_content == "") {
     fs.writeFile(source_folder + "/sass/_fonts.sass", "", cb);
@@ -185,9 +185,10 @@ function fontsStyle(params) {
       }
     });
   }
+  cb();
 }
 
-function cb() {}
+
 
 function watchFiles() {
   gulp.watch([path.watch.html], html);
@@ -202,9 +203,7 @@ function clean() {
 
 let build = gulp.series(
   clean,
-  gulp.parallel(js, css, html, images, fonts),
-  fontsStyle
-);
+  gulp.parallel(js, css, html, images, fonts),fontsStyle);
 let watch = gulp.parallel(build, watchFiles, browserSync);
 
 exports.fontsStyle = fontsStyle;
